@@ -10,9 +10,11 @@ class ResponseBuilder
     {
         $body = $httpResponse->getBody();
 
+        $headers = $httpResponse->getHeaders();
+
         $normalizedResponse = $this->getNormalizedResponse($body);
 
-        return new Response($normalizedResponse['data'], $normalizedResponse['errors']);
+        return new Response($normalizedResponse['data'], $headers, $normalizedResponse['errors']);
     }
 
     private function getNormalizedResponse(string $body)

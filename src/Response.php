@@ -5,11 +5,15 @@ namespace Softonic\GraphQL;
 class Response
 {
     private $data;
+
+    private $headers;
+
     private $errors;
 
-    public function __construct(array $data, array $errors = [])
+    public function __construct(array $data, array $headers = [], array $errors = [])
     {
         $this->data = $data;
+        $this->headers = $headers;
         $this->errors = $errors;
     }
 
@@ -17,6 +21,11 @@ class Response
     {
         return $this->data;
     }
+
+  public function getHeaders(): array
+  {
+    return $this->headers;
+  }
 
     public function getErrors(): array
     {
