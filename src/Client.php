@@ -20,7 +20,7 @@ class Client
      * @throws \UnexpectedValueException When response body is not a valid json
      * @throws \RuntimeException         When there are transfer errors
      */
-    public function query(string $query, array $variables = null): Response
+    public function query(string $query, array $variables = null, array $guzzleOptions = null): Response
     {
         $options = [
             'json' => [
@@ -29,6 +29,10 @@ class Client
         ];
         if (!is_null($variables)) {
             $options['json']['variables'] = $variables;
+        }
+
+        if (!is_null($guzzleOptions)) {
+            $options = array_merge($options, $guzzleOptions);
         }
 
         try {
