@@ -4,15 +4,23 @@ namespace Softonic\GraphQL;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\TransferException;
+use Softonic\GraphQL\DataObjects\Mutation\MutationObject;
 
 class Client
 {
+    /**
+     * @var ClientInterface
+     */
     private $httpClient;
+
+    /**
+     * @var ResponseBuilder
+     */
     private $responseBuilder;
 
     public function __construct(ClientInterface $httpClient, ResponseBuilder $responseBuilder)
     {
-        $this->httpClient = $httpClient;
+        $this->httpClient      = $httpClient;
         $this->responseBuilder = $responseBuilder;
     }
 
@@ -22,14 +30,31 @@ class Client
      */
     public function query(string $query, array $variables = null, array $guzzleOptions = null): Response
     {
+        return $this->executeQuery($query, $variables, $guzzleOptions);
+    }
+
+    /**
+     * @throws \UnexpectedValueException When response body is not a valid json
+     * @throws \RuntimeException         When there are transfer errors
+     */
+    public function mutate(string $query, MutationObject $mutation): Response
+    {
+        return $this->executeQuery($query, $mutation);
+    }
+
+    private function executeQuery(string $query, $variables, array $guzzleOptions = null): Response
+    {
+        $body = ['query' => $query];
+        if (!is_null($variables)) {
+            $body['variables'] = $variables;
+        }
+
         $options = [
-            'json' => [
-                'query' => $query,
+            'body'    => json_encode($body, JSON_UNESCAPED_SLASHES),
+            'headers' => [
+                'Content-Type' => 'application/json',
             ],
         ];
-        if (!is_null($variables)) {
-            $options['json']['variables'] = $variables;
-        }
 
         if (!is_null($guzzleOptions)) {
             $options = array_merge($options, $guzzleOptions);

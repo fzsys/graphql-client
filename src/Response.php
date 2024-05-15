@@ -2,38 +2,58 @@
 
 namespace Softonic\GraphQL;
 
-class Response
-{
-    private $data;
+class Response {
 
-    private $headers;
+  /**
+   * @var array
+   */
+  private $data;
 
-    private $errors;
+  /**
+   * @var array
+   */
+  private $headers;
 
-    public function __construct(array $data, array $headers = [], array $errors = [])
-    {
-        $this->data = $data;
-        $this->headers = $headers;
-        $this->errors = $errors;
-    }
+  /**
+   * @var array
+   */
+  private $errors;
 
-    public function getData(): array
-    {
-        return $this->data;
-    }
+  /**
+   * @var array
+   */
+  private $dataObject;
 
-  public function getHeaders(): array
-  {
+  public function __construct(
+    array $data,
+    array $errors = [],
+    array $dataObject = [],
+    array $headers = []
+  ) {
+    $this->data = $data;
+    $this->errors = $errors;
+    $this->dataObject = $dataObject;
+    $this->headers = $headers;
+  }
+
+  public function getData(): array {
+    return $this->data;
+  }
+
+  public function getHeaders(): array {
     return $this->headers;
   }
 
-    public function getErrors(): array
-    {
-        return $this->errors;
-    }
+  public function getErrors(): array {
+    return $this->errors;
+  }
 
-    public function hasErrors(): bool
-    {
-        return !empty($this->errors);
-    }
+  public function hasErrors(): bool {
+    return !empty($this->errors);
+  }
+
+  public function getDataObject(): array {
+    return $this->dataObject;
+  }
+
 }

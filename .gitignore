@@ -2,3 +2,7 @@
 composer.lock
 .php_cs.cache
 .idea
+*.cache
+*.lock
+vendor
+build

@@ -6,15 +6,28 @@ use Psr\Http\Message\ResponseInterface;
 
 class ResponseBuilder
 {
+    private $dataObjectBuilder;
+
+    public function __construct(DataObjectBuilder $dataObjectBuilder = null)
+    {
+        $this->dataObjectBuilder = $dataObjectBuilder;
+    }
+
     public function build(ResponseInterface $httpResponse)
     {
         $body = $httpResponse->getBody();
-
         $headers = $httpResponse->getHeaders();
-
         $normalizedResponse = $this->getNormalizedResponse($body);
+        $dataObject = array_key_exists('dataObject', $normalizedResponse)
+            ? $normalizedResponse['dataObject']
+            : [];
 
-        return new Response($normalizedResponse['data'], $headers, $normalizedResponse['errors']);
+        return new Response(
+            $normalizedResponse['data'],
+            $normalizedResponse['errors'],
+            $dataObject,
+            $headers
+        );
     }
 
     private function getNormalizedResponse(string $body)
@@ -27,10 +40,16 @@ class ResponseBuilder
             );
         }
 
-        return [
-            'data' => $decodedResponse['data'] ?? [],
+        $result = [
+            'data'   => $decodedResponse['data'] ?? [],
             'errors' => $decodedResponse['errors'] ?? [],
         ];
+
+        if (!is_null($this->dataObjectBuilder)) {
+            $result['dataObject'] = $this->dataObjectBuilder->buildQuery($decodedResponse['data'] ?? []);
+        }
+
+        return $result;
     }
 
     private function getJsonDecodedResponse(string $body)
