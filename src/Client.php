@@ -44,28 +44,25 @@ class Client
 
     private function executeQuery(string $query, $variables, array $guzzleOptions = null): Response
     {
-        $body = ['query' => $query];
-        if (!is_null($variables)) {
-            $body['variables'] = $variables;
-        }
+      $options = [
+        'json' => [
+          'query' => $query,
+        ],
+      ];
+      if (!is_null($variables)) {
+        $options['json']['variables'] = $variables;
+      }
 
-        $options = [
-            'body'    => json_encode($body, JSON_UNESCAPED_SLASHES),
-            'headers' => [
-                'Content-Type' => 'application/json',
-            ],
-        ];
+      if (!is_null($guzzleOptions)) {
+        $options = array_merge($options, $guzzleOptions);
+      }
 
-        if (!is_null($guzzleOptions)) {
-            $options = array_merge($options, $guzzleOptions);
-        }
+      try {
+        $response = $this->httpClient->request('POST', '', $options);
+      } catch (TransferException $e) {
+        throw new \RuntimeException('Network Error.' . $e->getMessage(), 0, $e);
+      }
 
-        try {
-            $response = $this->httpClient->request('POST', '', $options);
-        } catch (TransferException $e) {
-            throw new \RuntimeException('Network Error.' . $e->getMessage(), 0, $e);
-        }
-
-        return $this->responseBuilder->build($response);
+      return $this->responseBuilder->build($response);
     }
 }
