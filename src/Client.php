@@ -54,7 +54,7 @@ class Client
       }
 
       if (!is_null($guzzleOptions)) {
-        $options = array_merge($options, $guzzleOptions);
+        $options = array_merge_recursive($options, $guzzleOptions);
       }
 
       try {
